@@ -1,7 +1,10 @@
 package com.moneyforward.githubapp
 
-import android.app.Application
+import androidx.multidex.MultiDexApplication
 import dagger.hilt.android.HiltAndroidApp
 
+/**
+ * Application class.
+ */
 @HiltAndroidApp
-class GithubApp: Application()
+class GithubApp: MultiDexApplication()
