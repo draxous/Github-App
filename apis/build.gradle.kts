@@ -13,3 +13,9 @@ kotlin {
         jvmTarget = JvmTarget.JVM_17
     }
 }
+
+dependencies {
+
+    implementation(libs.retrofit)
+
+}
