@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 /**
  * Interface for accessing user list data.
  */
-interface UserListRepository {
+interface SearchUserRepository {
     /**
      * Fetches a list of GitHub users based on the provided username.
      * @param keyword The username to search for.
