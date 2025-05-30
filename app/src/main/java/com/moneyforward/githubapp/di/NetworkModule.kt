@@ -2,6 +2,7 @@ package com.moneyforward.githubapp.di
 
 import com.moneyforward.apis.GithubApiService
 import com.moneyforward.githubapp.constants.ApiUrls
+import com.moneyforward.githubapp.network.PersonalAccessTokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     /**
-     * Provides BaseUrl as string
+     * Provides BaseUrl as string.
      */
     @Singleton
     @Provides
@@ -27,7 +28,7 @@ object NetworkModule {
     }
 
     /**
-     * Provides LoggingInterceptor for api information
+     * Provides LoggingInterceptor for api information.
      */
     @Singleton
     @Provides
@@ -35,14 +36,23 @@ object NetworkModule {
         return HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     }
 
+    /**
+     * Provides PAT Interceptor.
+     */
+    @Singleton
+    @Provides
+    fun provideAccessTokenInterceptor(): PersonalAccessTokenInterceptor {
+        return PersonalAccessTokenInterceptor()
+    }
 
     /**
-     * Provides custom OkkHttp
+     * Provides custom OkkHttp.
      */
     @Singleton
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
+        accessTokenInterceptor: PersonalAccessTokenInterceptor
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
 
@@ -52,6 +62,7 @@ object NetworkModule {
             readTimeout(40, TimeUnit.SECONDS)
             writeTimeout(40, TimeUnit.SECONDS)
             addInterceptor(loggingInterceptor)
+            addInterceptor(accessTokenInterceptor)
         }
         return okHttpClient.build()
     }
@@ -66,7 +77,7 @@ object NetworkModule {
     }
 
     /**
-     * Provides GithubApiServices client for Retrofit
+     * Provides GithubApiServices client for Retrofit.
      */
     @Singleton
     @Provides
@@ -83,7 +94,7 @@ object NetworkModule {
     }
 
     /**
-     * Provides Api Service using retrofit
+     * Provides Api Service using retrofit.
      */
     @Singleton
     @Provides

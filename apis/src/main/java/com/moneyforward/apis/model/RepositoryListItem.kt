@@ -1,4 +1,7 @@
-package com.moneyforward.api.model
+package com.moneyforward.apis.model
+
+import com.moneyforward.apis.model.License
+import com.moneyforward.apis.model.Owner
 
 data class RepositoryListItem(
     val allow_forking: Boolean,
