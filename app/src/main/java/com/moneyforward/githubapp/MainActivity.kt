@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.moneyforward.githubapp.ui.theme.GithubAppTheme
+import com.moneyforward.githubapp.ui.userslist.ui.UserListScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,8 +23,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GithubAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
+                    UserListScreen(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
