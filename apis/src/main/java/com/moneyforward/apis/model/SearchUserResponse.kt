@@ -1,6 +1,6 @@
-package com.moneyforward.api.model
+package com.moneyforward.apis.model
 
-data class UserList(
+data class SearchUserResponse(
     val incomplete_results: Boolean,
     val items: List<Item>,
     val total_count: Int
