@@ -1,10 +1,9 @@
 package com.moneyforward.githubapp.ui.userslist.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moneyforward.apis.common.ApiResult
-import com.moneyforward.githubapp.ui.userslist.data.UserListRepository
+import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import com.moneyforward.apis.model.SearchUserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,13 +31,13 @@ data class UserListUiState(
  * ViewModel for the UserList screen.
  *
  * This ViewModel is responsible for fetching and managing the list of GitHub users.
- * It uses [UserListRepository] to interact with the data layer.
+ * It uses [SearchUserRepository] to interact with the data layer.
  *
- * @param userListRepository The repository for fetching user data.
+ * @param searchUserRepository The repository for fetching user data.
  */
 @HiltViewModel
 class UserListViewModel @Inject constructor(
-    private val userListRepository: UserListRepository
+    private val searchUserRepository: SearchUserRepository
 ) : ViewModel() {
 
     companion object {
@@ -52,7 +51,7 @@ class UserListViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
-            userListRepository.searchGithubUsers(keyword).collect { apiState ->
+            searchUserRepository.searchGithubUsers(keyword).collect { apiState ->
                 when (val result = apiState.result) {
                     is ApiResult.Success -> {
                         _uiState.update {

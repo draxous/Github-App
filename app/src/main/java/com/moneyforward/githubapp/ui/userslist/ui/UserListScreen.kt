@@ -39,7 +39,7 @@ fun UserListScreen(
         LazyColumn {
             uiState.users?.items?.let { items ->
                 items(items) { user ->
-                    Text(user.url)
+                    user.url?.let { Text(it) }
                 }
             }?: run {
                 item {
