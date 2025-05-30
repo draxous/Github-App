@@ -37,8 +37,14 @@ fun UserListScreen(
         }
 
         LazyColumn {
-            items(uiState.users) { user ->
-                Text(user.items[0].url)
+            uiState.users?.items?.let { items ->
+                items(items) { user ->
+                    Text(user.url)
+                }
+            }?: run {
+                item {
+                    Text("No users found")
+                }
             }
         }
 
