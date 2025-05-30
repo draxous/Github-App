@@ -1,7 +1,7 @@
 package com.moneyforward.apis
 
-import com.moneyforward.api.model.RepositoryList
-import com.moneyforward.api.model.UserList
+import com.moneyforward.apis.model.RepositoryList
+import com.moneyforward.apis.model.SearchUserResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -12,14 +12,13 @@ interface GithubApiService {
 
     /**
      * Fetches a list of users from the Github API.
-     * @param since The ID of the last user seen. This is used for pagination.
-     * @return A list of [UserList] objects.
+     * @return A list of [SearchUserResponse] objects.
      * Ex: https://api.github.com/search/users?q={userName}
      */
     @GET("search/users?")
-    suspend fun users(
+    suspend fun searchUsers(
         @Query("q") userName: String
-    ): List<UserList>
+    ): SearchUserResponse
 
     /**
      * Fetches a list of repositories from the Github API.

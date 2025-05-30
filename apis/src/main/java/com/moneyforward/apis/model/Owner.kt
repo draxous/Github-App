@@ -1,4 +1,4 @@
-package com.moneyforward.api.model
+package com.moneyforward.apis.model
 
 data class Owner(
     val avatar_url: String,

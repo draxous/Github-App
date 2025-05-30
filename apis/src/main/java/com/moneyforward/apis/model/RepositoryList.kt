@@ -1,3 +1,3 @@
-package com.moneyforward.api.model
+package com.moneyforward.apis.model
 
 class RepositoryList : ArrayList<RepositoryListItem>()

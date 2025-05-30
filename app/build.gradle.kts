@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -11,6 +13,10 @@ android {
     namespace = "com.moneyforward.githubapp"
     compileSdk = 35
 
+    val localProperties = Properties()
+    val localPropertiesFile = rootProject.file("local.properties")
+    localPropertiesFile.takeIf { it.exists() }?.inputStream()?.use(localProperties::load)
+
     defaultConfig {
         applicationId = "com.moneyforward.githubapp"
         minSdk = 26
@@ -22,6 +28,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField(
+            "String",
+            "GITHUB_TOKEN",
+            "\"${localProperties.getProperty("GITHUB_TOKEN", "")}\""
+        )
     }
 
     buildTypes {

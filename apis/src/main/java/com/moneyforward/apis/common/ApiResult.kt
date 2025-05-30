@@ -1,4 +1,4 @@
-package com.moneyforward.api.common
+package com.moneyforward.apis.common
 
 /**
  * Class representing the result of an API call.

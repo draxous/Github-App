@@ -1,4 +1,4 @@
-package com.moneyforward.api.common
+package com.moneyforward.apis.common
 
 data class ApiState<out T>(
     val isLoading: Boolean = false,
