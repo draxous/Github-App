@@ -92,6 +92,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+
+
     // Additional libraries
     implementation(libs.androidx.constraintlayout.compose)
     implementation(libs.androidx.paging.compose)

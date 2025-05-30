@@ -2,7 +2,7 @@ package com.moneyforward.githubapp.di
 
 import com.moneyforward.apis.GithubApiService
 import com.moneyforward.githubapp.constants.ApiUrls
-import com.moneyforward.githubapp.network.PersonalAccessTokenInterceptor
+import com.moneyforward.githubapp.network.ServiceInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,8 +41,8 @@ object NetworkModule {
      */
     @Singleton
     @Provides
-    fun provideAccessTokenInterceptor(): PersonalAccessTokenInterceptor {
-        return PersonalAccessTokenInterceptor()
+    fun provideAccessTokenInterceptor(): ServiceInterceptor {
+        return ServiceInterceptor()
     }
 
     /**
@@ -52,7 +52,7 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        accessTokenInterceptor: PersonalAccessTokenInterceptor
+        accessTokenInterceptor: ServiceInterceptor
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
 
