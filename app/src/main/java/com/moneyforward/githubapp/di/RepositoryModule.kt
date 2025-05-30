@@ -1,8 +1,8 @@
 package com.moneyforward.githubapp.di
 
 import com.moneyforward.apis.GithubApiService
-import com.moneyforward.githubapp.ui.userslist.data.UserListRepository
-import com.moneyforward.githubapp.ui.userslist.data.UserListRepositoryImpl
+import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
+import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,8 +25,8 @@ object RepositoryModule {
     @Provides
     fun provideUserListRepository(
         apiService: GithubApiService,
-    ): UserListRepository {
-        return UserListRepositoryImpl(
+    ): SearchUserRepository {
+        return SearchUserRepositoryImpl(
             apiService
         )
     }
