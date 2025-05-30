@@ -22,6 +22,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "GITHUB_TOKEN", "\"${project.properties["GITHUB_TOKEN"]}\"")
     }
 
     buildTypes {
