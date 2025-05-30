@@ -15,12 +15,27 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
+/**
+ * UI state for the UserList screen.
+ *
+ * @property users The list of users to display.
+ * @property isLoading Whether the screen is currently loading data.
+ * @property error An error message, if any.
+ */
 data class UserListUiState(
     val users: SearchUserResponse? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
+/**
+ * ViewModel for the UserList screen.
+ *
+ * This ViewModel is responsible for fetching and managing the list of GitHub users.
+ * It uses [UserListRepository] to interact with the data layer.
+ *
+ * @param userListRepository The repository for fetching user data.
+ */
 @HiltViewModel
 class UserListViewModel @Inject constructor(
     private val userListRepository: UserListRepository
