@@ -1,7 +1,7 @@
 package com.moneyforward.githubapp.ui.userslist.data
 
-import com.moneyforward.api.common.ApiState
-import com.moneyforward.api.model.UserList
+import com.moneyforward.apis.common.ApiState
+import com.moneyforward.apis.model.SearchUserResponse
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 interface UserListRepository {
     /**
      * Fetches a list of GitHub users based on the provided username.
-     * @param userName The username to search for.
-     * @return A [Flow] emitting [ApiState] which wraps a list of [UserList].
+     * @param keyword The username to search for.
+     * @return A [Flow] emitting [ApiState] which wraps a list of [SearchUserResponse].
      */
-    suspend fun githubUsers(userName: String): Flow<ApiState<List<UserList>>>
+    suspend fun searchGithubUsers(keyword: String): Flow<ApiState<SearchUserResponse>>
 }

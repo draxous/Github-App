@@ -1,8 +1,8 @@
 package com.moneyforward.githubapp.ui.userslist.data
 
 import com.moneyforward.apis.GithubApiService
-import com.moneyforward.api.common.ApiState
-import com.moneyforward.api.model.UserList
+import com.moneyforward.apis.common.ApiState
+import com.moneyforward.apis.model.SearchUserResponse
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,14 +24,14 @@ class UserListRepositoryImpl @Inject constructor(
 
     /**
      * Fetches a list of GitHub users.
-     * @param userName The username to search for (currently hardcoded to "draxous").
-     * @return A [Flow] of [ApiState] that emits the list of [UserList] objects on success,
+     * @param keyword The username to search for (currently hardcoded to "draxous").
+     * @return A [Flow] of [ApiState] that emits the list of [SearchUserResponse] objects on success,
      * or an error state on failure.
      */
-    override suspend fun githubUsers(userName: String): Flow<ApiState<List<UserList>>> = flow {
+    override suspend fun searchGithubUsers(keyword: String): Flow<ApiState<SearchUserResponse>> = flow {
         try {
             val users = withContext(ioDispatcher) {
-                githubApiService.users(userName)
+                githubApiService.searchUsers(keyword)
             }
             emit(ApiState.success(users))
         }  catch (e: IOException) {
