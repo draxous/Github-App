@@ -25,7 +25,8 @@ import javax.inject.Inject
 data class UserListUiState(
     val users: SearchUserResponse? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val lastQuery: String = ""
 )
 
 /**
@@ -97,6 +98,10 @@ class UserListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun retry() {
+        fetchUsers(_uiState.value.lastQuery)
     }
 
 

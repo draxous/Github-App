@@ -1,55 +1,228 @@
 package com.moneyforward.githubapp.ui.userslist.ui
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.moneyforward.githubapp.R
+import coil.compose.rememberAsyncImagePainter
 
 /**
  * UserListScreen composable function.
  * This screen displays a list of users.
- *
- * @param modifier The modifier to apply to this screen.
+ * @param onUserSelected Callback function to handle user selection.
  * @param viewModel The view model for this screen.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserListScreen(
-    modifier: Modifier = Modifier,
-    viewModel: UserListViewModel = hiltViewModel()
+    onUserSelected: (String) -> Unit,
+    viewModel: UserListViewModel = hiltViewModel(),
 ) {
+    var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = modifier) {
-        if (uiState.isLoading) {
-            CircularProgressIndicator()
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Users") },
+            )
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
+        ) {
+            // Search Bar
+            SearchBar(
+                query = searchQuery,
+                onQueryChange = { query ->
+                    searchQuery = query
+                    viewModel.fetchUsers(query)
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
 
-        uiState.error?.let { error ->
-            Text("Error: $error", color = Color.Red)
-        }
-
-        LazyColumn {
-            uiState.users?.items?.let { items ->
-                items(items) { user ->
-                    user.url?.let { Text(it) }
+            // User List
+            when {
+                uiState.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
-            }?: run {
-                item {
-                    Text("No users found")
+
+                uiState.error != null -> {
+                    ErrorState(
+                        message = uiState.error.orEmpty(),
+                        onRetry = { viewModel.retry() }
+                    )
+                }
+
+                else -> {
+                    LazyColumn {
+                        // User items
+                        items(uiState.users?.items.orEmpty().filter { user ->
+                            user.login?.contains(searchQuery, ignoreCase = true) == true ||
+                                    user.login?.contains(searchQuery, ignoreCase = true) == true
+                        }) { user ->
+                            user.login?.let {
+                                UserListItem(
+                                    name = it,
+                                    onClick = { user.repos_url?.let { url -> onUserSelected(url) } },
+                                    avatarUrl = user.avatar_url
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+}
 
-        Button(onClick = { viewModel.fetchUsers("draxous") }) {
-            Text("Load Users")
+@Composable
+private fun UserListItem(
+    name: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    avatarUrl: String? = null,
+) {
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable(onClick = onClick),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (avatarUrl.isNullOrBlank()) {
+            Box(
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = name.first().toString(),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        } else {
+            val painter = rememberAsyncImagePainter(
+                model = avatarUrl,
+                placeholder = painterResource(id = R.drawable.ic_launcher_background),
+                error = painterResource(id = R.drawable.ic_launcher_background)
+            )
+            Image(
+                painter = painter,
+                contentDescription = "User avatar",
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(CircleShape)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Text(
+            text = name,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TextField(
+        value = query,
+        onValueChange = onQueryChange,
+        modifier = modifier,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search"
+            )
+        },
+        placeholder = { Text("Search users...") },
+        shape = RoundedCornerShape(16.dp),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun ErrorState(
+    message: String,
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = message,
+            color = MaterialTheme.colorScheme.error,
+            modifier = Modifier.padding(16.dp)
+        )
+        Button(
+            onClick = onRetry,
+            modifier = Modifier.padding(8.dp)
+        ) {
+            Text("Retry")
         }
     }
 }
