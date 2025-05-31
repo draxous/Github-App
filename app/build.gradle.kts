@@ -94,7 +94,7 @@ dependencies {
 
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
-
+    testImplementation(libs.turbine)
 
     // Additional libraries
     implementation(libs.androidx.constraintlayout.compose)
