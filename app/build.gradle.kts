@@ -113,6 +113,7 @@ dependencies {
     implementation(libs.landscapist.coil)
     implementation(libs.landscapist.placeholder)
     implementation(libs.landscapist.animation)
+    implementation(libs.coil.compose)
 
     // Dependency Injection
     implementation(libs.hilt.android)
