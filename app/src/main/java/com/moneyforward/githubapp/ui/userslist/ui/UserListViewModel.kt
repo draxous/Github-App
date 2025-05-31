@@ -6,6 +6,7 @@ import com.moneyforward.apis.common.ApiResult
 import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import com.moneyforward.apis.model.SearchUserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -40,15 +41,22 @@ class UserListViewModel @Inject constructor(
     private val searchUserRepository: SearchUserRepository
 ) : ViewModel() {
 
-    companion object {
-        private val TAG = UserListViewModel::class.java.simpleName.toString()
-    }
-
+    /**
+     * The private mutable state flow that holds the current UI state.
+     */
     private val _uiState = MutableStateFlow(UserListUiState())
+
+    /**
+     * The public immutable state flow that exposes the UI state to the UI.
+     */
     val uiState: StateFlow<UserListUiState> = _uiState.asStateFlow()
 
+    /**
+     * Fetches GitHub users based on the provided keyword.
+     * @param keyword The search keyword.
+     */
     fun fetchUsers(keyword: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             searchUserRepository.searchGithubUsers(keyword).collect { apiState ->
@@ -89,5 +97,10 @@ class UserListViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    companion object {
+        private val TAG = UserListViewModel::class.java.simpleName.toString()
     }
 }
