@@ -29,6 +29,7 @@ compose-bom = "2025.05.01"
 compose = "1.8.2"
 room = "2.7.1"
 jetbrainsKotlinJvm = "2.0.21"
+turbine = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -69,6 +70,7 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.r
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
