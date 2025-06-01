@@ -131,17 +131,18 @@ fun RepoListScreen(
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(
                                 uiState.profile?.name.orEmpty(),
+                                style = MaterialTheme.typography.headlineMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 userName,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 20.sp,
+                                style = MaterialTheme.typography.headlineSmall,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 uiState.profile?.bio.orEmpty(),
-                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }

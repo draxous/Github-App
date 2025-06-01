@@ -135,7 +135,7 @@ private fun UserListItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp)
             .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -149,7 +149,7 @@ private fun UserListItem(
             ) {
                 Text(
                     text = name.first().toString(),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -172,7 +172,7 @@ private fun UserListItem(
 
         Text(
             text = name,
-            style = MaterialTheme.typography.bodySmall,
+            style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f)
         )
