@@ -6,8 +6,7 @@ sealed class Route(val route: String) {
         fun createRoute(username: String) = "repo_list/$username"
     }
 
-    // Optional: Add arguments for type safety
     object Arguments {
-        const val USERNAME = "username"
+        const val USER_NAME = "username"
     }
 }
