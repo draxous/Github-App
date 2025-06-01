@@ -1,5 +1,7 @@
 package com.moneyforward.githubapp.ui.repos.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.moneyforward.githubapp.R
+import androidx.core.net.toUri
 
 /**
  * Composable function for displaying the repository list screen.
@@ -50,6 +54,8 @@ fun RepoListScreen(
     onBackPressed: () -> Boolean,
     viewModel: RepoListViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(userName) {
         viewModel.fetchRepos(userName)
         viewModel.fetchProfile(userName)
@@ -246,7 +252,13 @@ fun RepoListScreen(
                                 name = repo.full_name.orEmpty(),
                                 description = repo.description.orEmpty(),
                                 stars = repo.stargazers_count ?: 0,
-                                language = repo.language.orEmpty()
+                                language = repo.language.orEmpty(),
+                                onClick = {
+                                    repo.html_url?.let { url ->
+                                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                                        context.startActivity(intent)
+                                    }
+                                }
                             )
                         }
                     }
@@ -274,8 +286,18 @@ fun StatBox(count: String, label: String) {
 }
 
 @Composable
-fun RepositoryItem(name: String, description: String, stars: Int, language: String) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+fun RepositoryItem(
+    name: String,
+    description: String,
+    stars: Int,
+    language: String,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .padding(vertical = 8.dp)
+            .clickable(onClick = onClick)
+    ) {
         Text(name, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
 
         Row(
