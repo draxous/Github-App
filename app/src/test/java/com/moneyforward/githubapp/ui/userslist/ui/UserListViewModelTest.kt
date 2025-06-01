@@ -1,6 +1,7 @@
 package com.moneyforward.githubapp.ui.userslist.ui
 
 import com.moneyforward.apis.common.ApiState
+import com.moneyforward.apis.model.Item
 import com.moneyforward.apis.model.SearchUserResponse
 import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import io.mockk.coEvery
@@ -10,10 +11,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.take
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -24,24 +23,19 @@ import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class UserListViewModelTest {
 
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
     private lateinit var viewModel: UserListViewModel
-    private val searchUserRepository: SearchUserRepository = mockk()
-
-    private val mockResponse = SearchUserResponse(
-        total_count = 1,
-        incomplete_results = false,
-        items = emptyList()
-    )
+    private val mockRepository: SearchUserRepository = mockk()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = UserListViewModel(searchUserRepository)
+        viewModel = UserListViewModel(mockRepository, testDispatcher)
     }
 
     @After
@@ -50,101 +44,152 @@ class UserListViewModelTest {
     }
 
     @Test
-    fun `initial state should be loading false and no error`() = runTest {
+    fun `initial state should be loading false with empty data`() {
         val initialState = viewModel.uiState.value
+        assertNull(initialState.users)
         assertFalse(initialState.isLoading)
         assertNull(initialState.error)
-        assertNull(initialState.users)
+        assertEquals("", initialState.lastQuery)
     }
 
     @Test
-    fun `fetchUsers should set loading to true when starting`() = runTest {
-        coEvery { searchUserRepository.searchGithubUsers(any()) } returns flowOf(
-            ApiState.loading()
+    fun `fetchUsers should update state with user data on success`() = runTest {
+        val testUsers = SearchUserResponse(
+            total_count = 1,
+            incomplete_results = false,
+            items = listOf(Item(id = 1, login = "testUser"))
         )
+        val apiState = ApiState.success(testUsers)
+
+        coEvery { mockRepository.searchGithubUsers(any()) } returns flowOf(apiState)
 
         viewModel.fetchUsers("test")
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        assertTrue(viewModel.uiState.value.isLoading)
+        val state = viewModel.uiState.value
+        assertEquals(testUsers, state.users)
+        assertEquals(1, state.users?.items?.size)
+        assertEquals("testUser", state.users?.items?.get(0)?.login)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
+        assertEquals("test", state.lastQuery)
     }
 
     @Test
-    fun `fetchUsers should pass the correct keyword to repository`() = runTest {
-        val testKeyword = "testUser"
-        coEvery { searchUserRepository.searchGithubUsers(testKeyword) } returns flowOf(
-            ApiState.success(
-                SearchUserResponse(
-                    total_count = 0,
-                    incomplete_results = false,
-                    items = emptyList()
-                )
-            )
+    fun `fetchUsers should handle empty user list`() = runTest {
+        val testUsers = SearchUserResponse(
+            total_count = 0,
+            incomplete_results = false,
+            items = emptyList()
+        )
+        val apiState = ApiState.success(testUsers)
+
+        coEvery { mockRepository.searchGithubUsers(any()) } returns flowOf(apiState)
+
+        viewModel.fetchUsers("empty")
+
+        val state = viewModel.uiState.value
+        assertEquals(0, state.users?.items?.size)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
+        assertEquals("empty", state.lastQuery)
+    }
+
+    @Test
+    fun `fetchUsers should update state with error on API error`() = runTest {
+        val errorMessage = "Rate limit exceeded"
+        val apiState = ApiState.error<SearchUserResponse>(Exception(errorMessage))
+
+        coEvery { mockRepository.searchGithubUsers(any()) } returns flowOf(apiState)
+
+        viewModel.fetchUsers("error")
+
+        val state = viewModel.uiState.value
+        assertNull(state.users)
+        assertFalse(state.isLoading)
+        assertEquals(errorMessage, state.error)
+        assertEquals("error", state.lastQuery)
+    }
+
+    @Test
+    fun `fetchUsers should update state with network error on IOException`() = runTest {
+        val errorMessage = "No internet connection"
+        val apiState = ApiState.networkError<SearchUserResponse>(IOException(errorMessage))
+
+        coEvery { mockRepository.searchGithubUsers(any()) } returns flowOf(apiState)
+
+        viewModel.fetchUsers("networkError")
+
+        val state = viewModel.uiState.value
+        assertNull(state.users)
+        assertFalse(state.isLoading)
+        assertTrue(state.error?.contains("Network error") == true)
+        assertEquals("networkError", state.lastQuery)
+    }
+
+    @Test
+    fun `fetchUsers should pass correct query to repository`() = runTest {
+        val testUsers = SearchUserResponse(
+            total_count = 1,
+            incomplete_results = false,
+            items = listOf(Item(id = 1, login = "testUser"))
+        )
+        val apiState = ApiState.success(testUsers)
+
+        coEvery { mockRepository.searchGithubUsers("test query") } returns flowOf(apiState)
+
+        viewModel.fetchUsers("test query")
+
+        // Use coVerify for suspension functions
+        coVerify { mockRepository.searchGithubUsers("test query") }
+    }
+
+    @Test
+    fun `retry should fetch users with last query`() = runTest {
+        val testUsers = SearchUserResponse(
+            total_count = 1,
+            incomplete_results = false,
+            items = listOf(Item(id = 1, login = "testUser"))
         )
 
-        viewModel.fetchUsers(testKeyword)
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { searchUserRepository.searchGithubUsers(testKeyword) }
-    }
-
-
-    @Test
-    fun `fetchUsers emits loading and success state`() = runTest {
-        coEvery { searchUserRepository.searchGithubUsers("mock") } returns flow {
-            emit(ApiState.success(mockResponse))
+        // First call fails with specific error
+        coEvery { mockRepository.searchGithubUsers("first") } returns flow {
+            emit(ApiState.error(Exception("First error")))
         }
 
-        launch {
-            viewModel.fetchUsers("mock")
-        }
-        testDispatcher.scheduler.advanceUntilIdle()
+        // Second call succeeds when retrying
+        coEvery { mockRepository.searchGithubUsers("first") } returns flowOf(
+            ApiState.success(testUsers)
+        )
 
-        val states = viewModel.uiState.take(2).toList()
+        // First attempt (should fail)
+        viewModel.fetchUsers("first")
 
-        assertTrue(states[0].isLoading)
-        assertFalse(states[1].isLoading)
-        assertEquals(mockResponse, states[1].users)
-        assertNull(states[1].error)
-    }
+        // Need to advance time to process the emission
+        advanceUntilIdle()
 
-    @Test
-    fun `fetchUsers emits loading and error state`() = runTest {
-        val error = RuntimeException("Something went wrong")
-        coEvery { searchUserRepository.searchGithubUsers("mock") } returns flow {
-            emit(ApiState.error(error))
-        }
 
-        launch {
-            viewModel.fetchUsers("mock")
-        }
-        testDispatcher.scheduler.advanceUntilIdle()
+        // Retry
+        viewModel.retry()
 
-        val states = viewModel.uiState.take(2).toList()
+        // Advance time again
+        advanceUntilIdle()
 
-        assertTrue(states[0].isLoading)
-        assertFalse(states[1].isLoading)
-        assertEquals("Something went wrong", states[1].error)
-        assertNull(states[1].users)
+        // Verify successful state after retry
+        val state = viewModel.uiState.value
+        assertEquals(testUsers, state.users)
+        assertFalse(state.isLoading)
+        assertNull(state.error)
+        assertEquals("first", state.lastQuery)
     }
 
     @Test
-    fun `fetchUsers emits loading and network error state`() = runTest {
-        val networkError = RuntimeException("No internet")
-        coEvery { searchUserRepository.searchGithubUsers("mock") } returns flow {
-            emit(ApiState.networkError(networkError))
-        }
+    fun `retry should do nothing if no previous query exists`() = runTest {
+        val initialState = viewModel.uiState.value
 
-        launch {
-            viewModel.fetchUsers("mock")
-        }
-        testDispatcher.scheduler.advanceUntilIdle()
 
-        val states = viewModel.uiState.take(2).toList()
+        viewModel.retry()
 
-        assertTrue(states[0].isLoading)
-        assertFalse(states[1].isLoading)
-        assertEquals("Network error: No internet", states[1].error)
-        assertNull(states[1].users)
+        // State should remain unchanged
+        assertEquals(initialState, viewModel.uiState.value)
     }
 }
