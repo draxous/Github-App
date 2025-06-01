@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -44,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.moneyforward.githubapp.R
+import com.moneyforward.githubapp.utils.ConnectionState
+import com.moneyforward.githubapp.utils.connectivityState
 
 /**
  * UserListScreen composable function.
@@ -59,12 +63,21 @@ fun UserListScreen(
 ) {
     var searchQuery by remember { mutableStateOf("") }
     val uiState by viewModel.uiState.collectAsState()
+    val connection by connectivityState()
+    val isConnected = connection == ConnectionState.Available
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(id = R.string.users_title)) },
             )
+        },
+        snackbarHost = {
+            if (!isConnected) {
+                Snackbar(modifier = Modifier.padding(8.dp)) {
+                    Text(stringResource(R.string.there_is_no_internet))
+                }
+            }
         }
     ) { paddingValues ->
         Column(
@@ -105,16 +118,52 @@ fun UserListScreen(
                 else -> {
                     LazyColumn {
                         // User items
-                        items(uiState.users?.items.orEmpty().filter { user ->
-                            user.login?.contains(searchQuery, ignoreCase = true) == true ||
-                                    user.login?.contains(searchQuery, ignoreCase = true) == true
-                        }) { user ->
-                            user.login?.let {
-                                UserListItem(
-                                    name = it,
-                                    onClick = { user.login?.let { userName -> onUserSelected(userName) } },
-                                    avatarUrl = user.avatar_url
-                                )
+                        when {
+                            uiState.users?.items?.isEmpty() == true -> {
+                                item {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 32.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.user_notfound),
+                                            contentDescription = stringResource(id = R.string.no_user_image_description),
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            text = stringResource(id = R.string.no_user_message),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                items(uiState.users?.items.orEmpty().filter { user ->
+                                    user.login?.contains(searchQuery, ignoreCase = true) == true ||
+                                            user.login?.contains(
+                                                searchQuery,
+                                                ignoreCase = true
+                                            ) == true
+                                }) { user ->
+                                    user.login?.let {
+                                        UserListItem(
+                                            name = it,
+                                            onClick = {
+                                                user.login?.let { userName ->
+                                                    onUserSelected(
+                                                        userName
+                                                    )
+                                                }
+                                            },
+                                            avatarUrl = user.avatar_url
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

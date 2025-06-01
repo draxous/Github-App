@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -38,6 +39,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.moneyforward.githubapp.R
 import androidx.core.net.toUri
+import com.moneyforward.githubapp.utils.ConnectionState
+import com.moneyforward.githubapp.utils.connectivityState
 
 /**
  * Composable function for displaying the repository list screen.
@@ -55,6 +58,8 @@ fun RepoListScreen(
     viewModel: RepoListViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val connection by connectivityState()
+    val isConnected = connection == ConnectionState.Available
 
     LaunchedEffect(userName) {
         viewModel.fetchRepos(userName)
@@ -77,6 +82,13 @@ fun RepoListScreen(
                     )
                 }
             )
+        },
+        snackbarHost = {
+            if (!isConnected) {
+                Snackbar(modifier = Modifier.padding(8.dp)) {
+                    Text(stringResource(R.string.there_is_no_internet))
+                }
+            }
         }
     ) { paddingValues ->
         Surface(
@@ -225,41 +237,45 @@ fun RepoListScreen(
                     // Filter out forked repositories.
                     val nonForkedRepos = uiState.repoList.orEmpty().filter { it.fork != true }
 
-                    if (nonForkedRepos.isEmpty()) {
-                        item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.no_repos),
-                                    contentDescription = stringResource(id = R.string.no_repositories_image_description),
-                                    modifier = Modifier.size(96.dp)
-                                )
-                                Spacer(modifier = Modifier.height(12.dp))
-                                Text(
-                                    text = stringResource(id = R.string.no_original_repositories_message),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                    when {
+                        nonForkedRepos.isEmpty() -> {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.no_repos),
+                                        contentDescription = stringResource(id = R.string.no_repositories_image_description),
+                                        modifier = Modifier.size(96.dp)
+                                    )
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = stringResource(id = R.string.no_original_repositories_message),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
-                    } else {
-                        items(nonForkedRepos) { repo ->
-                            RepositoryItem(
-                                name = repo.full_name.orEmpty(),
-                                description = repo.description.orEmpty(),
-                                stars = repo.stargazers_count ?: 0,
-                                language = repo.language.orEmpty(),
-                                onClick = {
-                                    repo.html_url?.let { url ->
-                                        val intent = Intent(Intent.ACTION_VIEW, url.toUri())
-                                        context.startActivity(intent)
+
+                        else -> {
+                            items(nonForkedRepos) { repo ->
+                                RepositoryItem(
+                                    name = repo.full_name.orEmpty(),
+                                    description = repo.description.orEmpty(),
+                                    stars = repo.stargazers_count ?: 0,
+                                    language = repo.language.orEmpty(),
+                                    onClick = {
+                                        repo.html_url?.let { url ->
+                                            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+                                            context.startActivity(intent)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                 }
