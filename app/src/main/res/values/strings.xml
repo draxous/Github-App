@@ -1,3 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">GithubApp</string>
+    <string name="app_name">GitHub</string>
+    <string name="users_title">Users</string>
+    <string name="user_avatar_content_description">User avatar</string>
+    <string name="search_icon_content_description">Search</string>
+    <string name="search_users_placeholder">Search users...</string>
+    <string name="retry_button_text">Retry</string>
+    <string name="no_repositories_yet_message">No repositories yet!</string>
+    <string name="no_repositories_image_description">No repositories image</string>
+    <string name="no_original_repositories_message">No original repositories found!</string>
+    <string name="star_icon_description">Star</string>
+    <string name="followers_label">Followers</string>
+    <string name="following_label">Following</string>
+    <string name="repositories_title">Repositories</string>
+    <string name="back_button_description">Back</string>
+    <string name="profile_title">Profile</string>
+
 </resources>

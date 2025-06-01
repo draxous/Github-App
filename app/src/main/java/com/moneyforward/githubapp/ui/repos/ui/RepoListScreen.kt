@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -59,11 +60,11 @@ fun RepoListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile") },
+                title = { Text(stringResource(id = R.string.profile_title)) },
                 navigationIcon = {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(id = R.string.back_button_description),
                         modifier = Modifier
                             .clickable { onBackPressed() }
                             .padding(horizontal = 16.dp)
@@ -112,7 +113,7 @@ fun RepoListScreen(
                             )
                             Image(
                                 painter = painter,
-                                contentDescription = "User avatar",
+                                contentDescription = stringResource(id = R.string.user_avatar_content_description),
                                 modifier = Modifier
                                     .size(132.dp)
                                     .clip(CircleShape)
@@ -163,7 +164,7 @@ fun RepoListScreen(
                         ) {
                             StatBox(
                                 count = uiState.profile?.followers?.toString().orEmpty(),
-                                label = "Followers"
+                                label = stringResource(id = R.string.followers_label)
                             )
                         }
 
@@ -177,7 +178,7 @@ fun RepoListScreen(
                         ) {
                             StatBox(
                                 count = uiState.profile?.following?.toString().orEmpty(),
-                                label = "Following"
+                                label = stringResource(id = R.string.following_label)
                             )
                         }
                     }
@@ -185,7 +186,7 @@ fun RepoListScreen(
 
                 item {
                     Text(
-                        "Repositories",
+                        stringResource(id = R.string.repositories_title),
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
@@ -201,12 +202,12 @@ fun RepoListScreen(
                         ) {
                             Image(
                                 painter = painterResource(id = R.drawable.no_repos),
-                                contentDescription = "No repositories image",
+                                contentDescription = stringResource(id = R.string.no_repositories_image_description),
                                 modifier = Modifier.size(96.dp)
                             )
                             Spacer(modifier = Modifier.height(12.dp))
                             Text(
-                                text = "No repositories yet!",
+                                text = stringResource(id = R.string.no_repositories_yet_message),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -227,12 +228,12 @@ fun RepoListScreen(
                             ) {
                                 Image(
                                     painter = painterResource(id = R.drawable.no_repos),
-                                    contentDescription = "No repositories image",
+                                    contentDescription = stringResource(id = R.string.no_repositories_image_description),
                                     modifier = Modifier.size(96.dp)
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = "No original repositories found!",
+                                    text = stringResource(id = R.string.no_original_repositories_message),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -282,7 +283,7 @@ fun RepositoryItem(name: String, description: String, stars: Int, language: Stri
         ) {
             Icon(
                 imageVector = Icons.Default.Star,
-                contentDescription = "Star",
+                contentDescription = stringResource(id = R.string.star_icon_description),
                 tint = Color(0xFFFFD700),
                 modifier = Modifier.size(16.dp)
             )

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GitHub</string>
+    <string name="users_title">ユーザー</string>
+    <string name="user_avatar_content_description">ユーザーのアバター</string>
+    <string name="search_icon_content_description">検索</string>
+    <string name="search_users_placeholder">ユーザーを検索...</string>
+    <string name="retry_button_text">再試行</string>
+    <string name="no_repositories_yet_message">リポジトリはまだありません！</string>
+    <string name="no_repositories_image_description">リポジトリなしの画像</string>
+    <string name="no_original_repositories_message">元のリポジトリは見つかりませんでした！</string>
+    <string name="star_icon_description">星</string>
+    <string name="followers_label">フォロワー</string>
+    <string name="following_label">フォロー中</string>
+    <string name="repositories_title">リポジトリ</string>
+    <string name="back_button_description">戻る</string>
+    <string name="profile_title">プロフィール</string>
+</resources>

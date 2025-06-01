@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -62,7 +63,7 @@ fun UserListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Users") },
+                title = { Text(stringResource(id = R.string.users_title)) },
             )
         }
     ) { paddingValues ->
@@ -160,7 +161,7 @@ private fun UserListItem(
             )
             Image(
                 painter = painter,
-                contentDescription = "User avatar",
+                contentDescription = stringResource(R.string.user_avatar_content_description),
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
@@ -191,10 +192,10 @@ private fun SearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search"
+                contentDescription = stringResource(R.string.search_icon_content_description)
             )
         },
-        placeholder = { Text("Search users...") },
+        placeholder = { Text(stringResource(R.string.search_users_placeholder)) },
         shape = RoundedCornerShape(16.dp),
         singleLine = true
     )
@@ -220,7 +221,7 @@ private fun ErrorState(
             onClick = onRetry,
             modifier = Modifier.padding(8.dp)
         ) {
-            Text("Retry")
+            Text(stringResource(R.string.retry_button_text))
         }
     }
 }
