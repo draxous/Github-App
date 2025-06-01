@@ -1,6 +1,8 @@
 package com.moneyforward.githubapp.di
 
 import com.moneyforward.apis.GithubApiService
+import com.moneyforward.githubapp.ui.repos.data.RepoListRepository
+import com.moneyforward.githubapp.ui.repos.data.RepoListRepositoryImpl
 import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepositoryImpl
 import dagger.Module
@@ -27,6 +29,20 @@ object RepositoryModule {
         apiService: GithubApiService,
     ): SearchUserRepository {
         return SearchUserRepositoryImpl(
+            apiService
+        )
+    }
+    /**
+     * Provides RepoListRepositoryImpl for RepoListRepository.
+     *
+     * @return RepoListRepositoryImpl.
+     */
+    @Singleton
+    @Provides
+    fun provideRepoListRepository(
+        apiService: GithubApiService,
+    ): RepoListRepository {
+        return RepoListRepositoryImpl(
             apiService
         )
     }
