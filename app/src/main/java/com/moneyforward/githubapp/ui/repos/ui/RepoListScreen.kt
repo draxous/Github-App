@@ -1,0 +1,269 @@
+package com.moneyforward.githubapp.ui.repos.ui
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
+import com.moneyforward.githubapp.R
+
+/**
+ * Composable function for displaying the repository list screen.
+ *
+ * @param userName The username for which repositories are to be fetched.
+ * @param onBackPressed Callback function to handle the back press event.
+ * @param viewModel The view model for this screen.
+ */
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RepoListScreen(
+    userName: String,
+    onBackPressed: () -> Boolean,
+    viewModel: RepoListViewModel = hiltViewModel()
+) {
+    LaunchedEffect(userName) {
+        viewModel.fetchRepos(userName)
+        viewModel.fetchProfile(userName)
+    }
+
+    val uiState by viewModel.uiState.collectAsState()
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Profile") },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier
+                            .clickable { onBackPressed() }
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+            )
+        }
+    ) { paddingValues ->
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Avatar
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (uiState.profile?.avatar_url.isNullOrBlank()) {
+                            Box(
+                                modifier = Modifier
+                                    .size(96.dp)
+                                    .clip(CircleShape)
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = uiState.profile?.name.orEmpty().take(1),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        } else {
+                            val painter = rememberAsyncImagePainter(
+                                model = uiState.profile?.avatar_url,
+                                placeholder = painterResource(id = R.drawable.ic_launcher_background),
+                                error = painterResource(id = R.drawable.ic_launcher_background)
+                            )
+                            Image(
+                                painter = painter,
+                                contentDescription = "User avatar",
+                                modifier = Modifier
+                                    .size(132.dp)
+                                    .clip(CircleShape)
+                            )
+                        }
+                    }
+                }
+
+                // Name + handle + bio
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                uiState.profile?.name.orEmpty(),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                userName,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                uiState.profile?.bio.orEmpty(),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+
+                // Follower / Following boxes
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            StatBox(
+                                count = uiState.profile?.followers?.toString().orEmpty(),
+                                label = "Followers"
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(vertical = 16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            StatBox(
+                                count = uiState.profile?.following?.toString().orEmpty(),
+                                label = "Following"
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        "Repositories",
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                if (uiState.repoList.isNullOrEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.no_repos),
+                                contentDescription = "No repositories image",
+                                modifier = Modifier.size(96.dp)
+                            )
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Text(
+                                text = "No repositories yet!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                } else {
+                    items(uiState.repoList.orEmpty()) { repo ->
+                        RepositoryItem(
+                            name = repo.full_name.orEmpty(),
+                            description = repo.description.orEmpty(),
+                            stars = repo.stargazers_count ?: 0,
+                            language = repo.language.orEmpty()
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StatBox(count: String, label: String) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = count,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        Text(
+            text = label,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+fun RepositoryItem(name: String, description: String, stars: Int, language: String) {
+    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+        Text(name, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Star,
+                contentDescription = "Star",
+                tint = Color(0xFFFFD700),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(stars.toString(), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface)
+        }
+
+        Text(description, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(language, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}

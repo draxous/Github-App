@@ -20,8 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,8 +41,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.moneyforward.githubapp.R
 import coil.compose.rememberAsyncImagePainter
+import com.moneyforward.githubapp.R
 
 /**
  * UserListScreen composable function.
@@ -113,7 +111,7 @@ fun UserListScreen(
                             user.login?.let {
                                 UserListItem(
                                     name = it,
-                                    onClick = { user.repos_url?.let { url -> onUserSelected(url) } },
+                                    onClick = { user.login?.let { userName -> onUserSelected(userName) } },
                                     avatarUrl = user.avatar_url
                                 )
                             }
@@ -157,8 +155,8 @@ private fun UserListItem(
         } else {
             val painter = rememberAsyncImagePainter(
                 model = avatarUrl,
-                placeholder = painterResource(id = R.drawable.ic_launcher_background),
-                error = painterResource(id = R.drawable.ic_launcher_background)
+                placeholder = painterResource(id = R.drawable.ic_profile),
+                error = painterResource(id = R.drawable.ic_profile)
             )
             Image(
                 painter = painter,

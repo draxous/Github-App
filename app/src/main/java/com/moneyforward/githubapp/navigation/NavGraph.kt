@@ -1,6 +1,4 @@
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -9,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.moneyforward.githubapp.navigation.Route
+import com.moneyforward.githubapp.ui.repos.ui.RepoListScreen
 import com.moneyforward.githubapp.ui.userslist.ui.UserListScreen
 
 @Composable
@@ -21,7 +20,7 @@ fun AppNavHost(
         startDestination = startDestination
     ) {
         userListScreen(navController)
-        repoListScreen()
+        repoListScreen(navController)
     }
 }
 
@@ -35,19 +34,19 @@ private fun NavGraphBuilder.userListScreen(navController: NavHostController) {
     }
 }
 
-private fun NavGraphBuilder.repoListScreen() {
+private fun NavGraphBuilder.repoListScreen(navController: NavHostController) {
     composable(
         route = Route.RepoList.route,
         arguments = listOf(
-            navArgument(Route.Arguments.USERNAME) {
+            navArgument(Route.Arguments.USER_NAME) {
                 type = NavType.StringType
             }
         )
     ) { backStackEntry ->
-        val username = backStackEntry.arguments?.getString(Route.Arguments.USERNAME).orEmpty()
-       /* RepoListScreen(
-            username = username,
+        val username = backStackEntry.arguments?.getString(Route.Arguments.USER_NAME).orEmpty()
+        RepoListScreen(
+            userName = username,
             onBackPressed = { navController.popBackStack() }
-        )*/
+        )
     }
 }
