@@ -8,6 +8,7 @@ import com.moneyforward.apis.model.RepositoryList
 import com.moneyforward.githubapp.ui.repos.data.RepoListRepository
 import com.moneyforward.githubapp.ui.userslist.ui.UserListViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -41,7 +42,8 @@ data class RepoListUiState(
  */
 @HiltViewModel
 open class RepoListViewModel @Inject constructor(
-    private val repoListRepository: RepoListRepository
+    private val repoListRepository: RepoListRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     /**
@@ -55,7 +57,7 @@ open class RepoListViewModel @Inject constructor(
     open val uiState: StateFlow<RepoListUiState> = _uiState.asStateFlow()
 
     fun fetchProfile(keyword: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             repoListRepository.profile(keyword).collect { apiState ->
@@ -99,7 +101,7 @@ open class RepoListViewModel @Inject constructor(
     }
 
     fun fetchRepos(keyword: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher) {
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             repoListRepository.repos(keyword).collect { apiState ->

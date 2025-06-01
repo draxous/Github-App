@@ -31,7 +31,7 @@ class RepoListRepositoryImplTest {
     private lateinit var repository: RepoListRepositoryImpl
 
     private val mockProfile = Profile(name = "rasika")
-    private val mockRepoList = RepositoryList() // Can be enhanced with mock data if needed
+    private val mockRepoList = RepositoryList()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
