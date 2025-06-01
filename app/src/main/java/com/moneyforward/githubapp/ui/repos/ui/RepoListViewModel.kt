@@ -40,7 +40,7 @@ data class RepoListUiState(
  * @param repoListRepository The repository for fetching repository data.
  */
 @HiltViewModel
-class RepoListViewModel @Inject constructor(
+open class RepoListViewModel @Inject constructor(
     private val repoListRepository: RepoListRepository
 ) : ViewModel() {
 
@@ -52,7 +52,7 @@ class RepoListViewModel @Inject constructor(
     /**
      * The public immutable state flow that exposes the UI state to the UI.
      */
-    val uiState: StateFlow<RepoListUiState> = _uiState.asStateFlow()
+    open val uiState: StateFlow<RepoListUiState> = _uiState.asStateFlow()
 
     fun fetchProfile(keyword: String) {
         viewModelScope.launch(Dispatchers.IO) {
