@@ -6,6 +6,7 @@ import com.moneyforward.apis.common.ApiResult
 import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import com.moneyforward.apis.model.SearchUserResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,7 +40,8 @@ data class UserListUiState(
  */
 @HiltViewModel
 class UserListViewModel @Inject constructor(
-    private val searchUserRepository: SearchUserRepository
+    private val searchUserRepository: SearchUserRepository,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ViewModel() {
 
     /**
@@ -57,8 +59,8 @@ class UserListViewModel @Inject constructor(
      * @param keyword The search keyword.
      */
     fun fetchUsers(keyword: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _uiState.update { it.copy(isLoading = true, error = null) }
+        viewModelScope.launch(dispatcher) {
+            _uiState.update { it.copy(isLoading = true, error = null, lastQuery = keyword) }
 
             searchUserRepository.searchGithubUsers(keyword).collect { apiState ->
                 when (val result = apiState.result) {
@@ -66,7 +68,8 @@ class UserListViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 users = result.data,
-                                isLoading = false
+                                isLoading = false,
+                                lastQuery = keyword
                             )
                         }
                     }
@@ -75,7 +78,8 @@ class UserListViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = result.throwable.message ?: "Unknown error"
+                                error = result.throwable.message ?: "Unknown error", // Ensure error is set
+                                lastQuery = keyword
                             )
                         }
                         Timber.tag(TAG)
@@ -86,13 +90,14 @@ class UserListViewModel @Inject constructor(
                         _uiState.update {
                             it.copy(
                                 isLoading = false,
-                                error = "Network error: ${result.throwable.message}"
+                                error = "Network error: ${result.throwable.message}",
+                                lastQuery = keyword
                             )
                         }
                     }
 
                     null -> {
-                        // Loading state already handled by initial update
+                        // Loading state
                         Timber.tag(TAG).d("Loading users: $keyword")
                     }
                 }
@@ -101,7 +106,13 @@ class UserListViewModel @Inject constructor(
     }
 
     fun retry() {
-        fetchUsers(_uiState.value.lastQuery)
+        val lastQuery = _uiState.value.lastQuery
+        if (lastQuery.isNotEmpty()) {
+            fetchUsers(lastQuery)
+        } else {
+            // No previous query exists - set loading to false to prevent spinner
+            _uiState.update { it.copy(isLoading = false) }
+        }
     }
 
 
