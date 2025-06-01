@@ -213,13 +213,40 @@ fun RepoListScreen(
                         }
                     }
                 } else {
-                    items(uiState.repoList.orEmpty()) { repo ->
-                        RepositoryItem(
-                            name = repo.full_name.orEmpty(),
-                            description = repo.description.orEmpty(),
-                            stars = repo.stargazers_count ?: 0,
-                            language = repo.language.orEmpty()
-                        )
+
+                    // Filter out forked repositories.
+                    val nonForkedRepos = uiState.repoList.orEmpty().filter { it.fork != true }
+
+                    if (nonForkedRepos.isEmpty()) {
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.no_repos),
+                                    contentDescription = "No repositories image",
+                                    modifier = Modifier.size(96.dp)
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
+                                Text(
+                                    text = "No original repositories found!",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    } else {
+                        items(nonForkedRepos) { repo ->
+                            RepositoryItem(
+                                name = repo.full_name.orEmpty(),
+                                description = repo.description.orEmpty(),
+                                stars = repo.stargazers_count ?: 0,
+                                language = repo.language.orEmpty()
+                            )
+                        }
                     }
                 }
             }
