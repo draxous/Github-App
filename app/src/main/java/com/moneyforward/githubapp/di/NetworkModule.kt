@@ -1,6 +1,7 @@
 package com.moneyforward.githubapp.di
 
 import com.moneyforward.apis.GithubApiService
+import com.moneyforward.githubapp.BuildConfig
 import com.moneyforward.githubapp.constants.ApiUrls
 import com.moneyforward.githubapp.network.ServiceInterceptor
 import dagger.Module
@@ -52,7 +53,7 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(
         loggingInterceptor: HttpLoggingInterceptor,
-        accessTokenInterceptor: ServiceInterceptor
+        serviceInterceptor: ServiceInterceptor
     ): OkHttpClient {
         val okHttpClient = OkHttpClient().newBuilder()
 
@@ -61,8 +62,10 @@ object NetworkModule {
             connectTimeout(40, TimeUnit.SECONDS)
             readTimeout(40, TimeUnit.SECONDS)
             writeTimeout(40, TimeUnit.SECONDS)
-            addInterceptor(loggingInterceptor)
-            addInterceptor(accessTokenInterceptor)
+            if (BuildConfig.DEBUG) {
+                addInterceptor(loggingInterceptor)
+            }
+            addInterceptor(serviceInterceptor)
         }
         return okHttpClient.build()
     }
