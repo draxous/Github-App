@@ -25,7 +25,7 @@ private const val AUTHORIZATION_HEADER = "Authorization"
  * OkHttp Interceptor to modify each request and append headers before they are sent.
  *
  * Add Personal Access Token(PAT) to the request header
- * Add Accept header to the request header
+ * Add Acceptd to the request header
  */
 
 class ServiceInterceptor : Interceptor {
