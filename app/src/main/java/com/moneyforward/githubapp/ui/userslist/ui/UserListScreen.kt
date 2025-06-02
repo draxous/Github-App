@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -101,8 +102,11 @@ fun UserListScreen(
             when {
                 uiState.isLoading -> {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("loading-indicator"),
                         contentAlignment = Alignment.Center
+
                     ) {
                         CircularProgressIndicator()
                     }
@@ -199,7 +203,7 @@ private fun UserListItem(
                 Text(
                     text = name.first().toString(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         } else {
@@ -237,7 +241,7 @@ private fun SearchBar(
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        modifier = modifier,
+        modifier = modifier.testTag("search-field"),
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
