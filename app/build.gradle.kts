@@ -67,6 +67,26 @@ android {
     room {
         schemaDirectory("$projectDir/schemas")
     }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/AL2.0",
+                "META-INF/LGPL2.1",
+                "META-INF/*.md",
+                "META-INF/*.txt"
+            )
+        }
+    }
+    
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+        }
+    }
+
 }
 
 dependencies {
@@ -89,6 +109,10 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.mockk.agent.android)
+    androidTestImplementation(libs.androidx.ui.test.junit4.v160) // Adjust version
+    androidTestImplementation(libs.androidx.runner)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -123,9 +147,4 @@ dependencies {
     // Logger
     implementation(libs.timber)
 
-    // Room database
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-    annotationProcessor(libs.room.compiler)
 }
