@@ -4,7 +4,7 @@
 A simple yet powerful Android app built with **Jetpack Compose**, **Hilt**, and **MVVM**, allowing users to search for GitHub profiles and view their public repositories.
 
 <p align="center">
-  <img src="preview.png" alt="App Screenshot" width="300"/>
+  <img src="screenshots/repos.png" alt="App Screenshot" width="300"/>
 </p>
 
 ## Features
