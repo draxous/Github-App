@@ -22,6 +22,7 @@ import javax.inject.Inject
  * Represents the UI state for the repository list screen.
  *
  * @property repoList The list of repositories to display.
+ * @property profile The user profile information.
  * @property isLoading Indicates whether the data is currently being loaded.
  * @property error An error message to display, if any.
  */

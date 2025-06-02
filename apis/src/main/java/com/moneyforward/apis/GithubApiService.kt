@@ -22,7 +22,12 @@ interface GithubApiService {
         @Query("q") userName: String
     ): SearchUserResponse
 
-
+    /**
+     * Fetches the profile of a user from the Github API.
+     * @param login The username of the user to fetch the profile for.
+     * @return A [Profile] object.
+     * Ex: https://api.github.com/users/{login}
+     */
     @GET("users/{login}")
     suspend fun profile(
         @Path("login") login: String

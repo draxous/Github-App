@@ -10,14 +10,14 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import java.io.IOException
 import timber.log.Timber
+import java.io.IOException
 import javax.inject.Inject
 
 /**
  * Implementation of [SearchUserRepository] that fetches user list data from [GithubApiService].
- * @param githubApiService The service to fetch user list data from.
- * @param ioDispatcher The coroutine dispatcher for I/O operations.
+ * @property githubApiService The service to fetch user list data from.
+ * @property ioDispatcher The coroutine dispatcher for I/O operations.
  */
 class SearchUserRepositoryImpl @Inject constructor(
     private val githubApiService: GithubApiService,

@@ -3,8 +3,8 @@ package com.moneyforward.githubapp.ui.userslist.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.moneyforward.apis.common.ApiResult
-import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import com.moneyforward.apis.model.SearchUserResponse
+import com.moneyforward.githubapp.ui.userslist.data.SearchUserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +22,7 @@ import javax.inject.Inject
  * @property users The list of users to display.
  * @property isLoading Whether the screen is currently loading data.
  * @property error An error message, if any.
+ * @property lastQuery The last search query performed.
  */
 data class UserListUiState(
     val users: SearchUserResponse? = null,
@@ -105,6 +106,9 @@ class UserListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Retries the last search query.
+     */
     fun retry() {
         val lastQuery = _uiState.value.lastQuery
         if (lastQuery.isNotEmpty()) {
@@ -115,7 +119,9 @@ class UserListViewModel @Inject constructor(
         }
     }
 
-
+    /**
+     * Companion object for the [UserListViewModel].
+     */
     companion object {
         private val TAG = UserListViewModel::class.java.simpleName.toString()
     }

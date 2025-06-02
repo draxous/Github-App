@@ -14,6 +14,12 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
+/**
+ * Implementation of [RepoListRepository] that fetches repository data from the GitHub API.
+ *
+ * @property githubApiService The service used to interact with the GitHub API.
+ * @property ioDispatcher The [CoroutineDispatcher] used for network operations, defaulting to [Dispatchers.IO].
+ */
 class RepoListRepositoryImpl @Inject constructor(
     private val githubApiService: GithubApiService,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO

@@ -1,19 +1,102 @@
 package com.moneyforward.apis.model
 
+/**
+ * RepositoryListItem
+ *
+ * @property allow_forking 
+ * @property archive_url 
+ * @property archived 
+ * @property assignees_url 
+ * @property blobs_url 
+ * @property branches_url 
+ * @property clone_url 
+ * @property collaborators_url 
+ * @property comments_url 
+ * @property commits_url 
+ * @property compare_url 
+ * @property contents_url 
+ * @property contributors_url 
+ * @property created_at 
+ * @property default_branch 
+ * @property deployments_url 
+ * @property description 
+ * @property disabled 
+ * @property downloads_url 
+ * @property events_url 
+ * @property fork 
+ * @property forks 
+ * @property forks_count 
+ * @property forks_url 
+ * @property full_name 
+ * @property git_commits_url 
+ * @property git_refs_url 
+ * @property git_tags_url 
+ * @property git_url 
+ * @property has_discussions 
+ * @property has_downloads 
+ * @property has_issues 
+ * @property has_pages 
+ * @property has_projects 
+ * @property has_wiki 
+ * @property homepage 
+ * @property hooks_url 
+ * @property html_url 
+ * @property id 
+ * @property is_template 
+ * @property issue_comment_url 
+ * @property issue_events_url 
+ * @property issues_url 
+ * @property keys_url 
+ * @property labels_url 
+ * @property language 
+ * @property languages_url 
+ * @property license 
+ * @property merges_url 
+ * @property milestones_url 
+ * @property mirror_url 
+ * @property name 
+ * @property node_id 
+ * @property notifications_url 
+ * @property open_issues 
+ * @property open_issues_count 
+ * @property owner 
+ * @property `private` 
+ * @property pulls_url 
+ * @property pushed_at 
+ * @property releases_url 
+ * @property size 
+ * @property ssh_url 
+ * @property stargazers_count 
+ * @property stargazers_url 
+ * @property statuses_url 
+ * @property subscribers_url 
+ * @property subscription_url 
+ * @property svn_url 
+ * @property tags_url 
+ * @property teams_url 
+ * @property topics 
+ * @property trees_url 
+ * @property updated_at 
+ * @property url 
+ * @property visibility 
+ * @property watchers 
+ * @property watchers_count 
+ * @property web_commit_signoff_required 
+ */
 data class RepositoryListItem(
     val allow_forking: Boolean? = null,
     val archive_url: String? = null,
     val archived: Boolean? = null,
     val assignees_url: String? = null,
-    val blobs_url: String? = null,
-    val branches_url: String? = null,
-    val clone_url: String? = null,
-    val collaborators_url: String? = null,
-    val comments_url: String? = null,
-    val commits_url: String? = null,
-    val compare_url: String? = null,
-    val contents_url: String? = null,
-    val contributors_url: String? = null,
+    val blobs_url: String? = null, // String?
+    val branches_url: String? = null, // String?
+    val clone_url: String? = null, // String?
+    val collaborators_url: String? = null, // String?
+    val comments_url: String? = null, // String?
+    val commits_url: String? = null, // String?
+    val compare_url: String? = null, // String?
+    val contents_url: String? = null, // String?
+    val contributors_url: String? = null, // String?
     val created_at: String? = null,
     val default_branch: String? = null,
     val deployments_url: String? = null,

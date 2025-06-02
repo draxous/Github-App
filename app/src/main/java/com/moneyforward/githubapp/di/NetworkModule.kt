@@ -39,6 +39,7 @@ object NetworkModule {
 
     /**
      * Provides PAT Interceptor.
+     * @return ServiceInterceptor.
      */
     @Singleton
     @Provides
@@ -48,6 +49,9 @@ object NetworkModule {
 
     /**
      * Provides custom OkkHttp.
+     * @param loggingInterceptor for api information.
+     * @param serviceInterceptor for access token.
+     * @return OkHttpClient.
      */
     @Singleton
     @Provides

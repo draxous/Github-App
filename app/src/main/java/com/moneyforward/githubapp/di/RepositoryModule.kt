@@ -11,13 +11,14 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
-@Module
 /**
  * Hilt module for repositories.
  */
+@Module
 @InstallIn(SingletonComponent::class)
 object RepositoryModule {
 
+    // region UserList
     /**
      * Provides UserListRepositoryImpl for UserListRepository.
      *
@@ -32,6 +33,9 @@ object RepositoryModule {
             apiService
         )
     }
+    // endregion
+
+    // region RepoList
     /**
      * Provides RepoListRepositoryImpl for RepoListRepository.
      *
@@ -46,4 +50,5 @@ object RepositoryModule {
             apiService
         )
     }
+    // endregion
 }
