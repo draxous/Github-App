@@ -1,11 +1,20 @@
 package com.moneyforward.githubapp.ui.repos.ui
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -33,12 +42,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.moneyforward.githubapp.R
-import androidx.core.net.toUri
 import com.moneyforward.githubapp.utils.ConnectionState
 import com.moneyforward.githubapp.utils.connectivityState
 
@@ -284,6 +294,13 @@ fun RepoListScreen(
     }
 }
 
+/**
+ * Composable function for displaying a stat box.
+ *
+ * @param count The count to be displayed in the stat box.
+ * @param label The label for the stat box.
+ */
+
 @Composable
 fun StatBox(count: String, label: String) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -300,6 +317,22 @@ fun StatBox(count: String, label: String) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun StatBoxPreview() {
+    StatBox(count = "100", label = "Followers")
+}
+
+/**
+ * Composable function for displaying a repository item.
+ *
+ * @param name The name of the repository.
+ * @param description The description of the repository.
+ * @param stars The number of stars for the repository.
+ * @param language The programming language of the repository.
+ * @param onClick Callback function to handle the click event on the repository item.
+ */
 
 @Composable
 fun RepositoryItem(
@@ -333,4 +366,16 @@ fun RepositoryItem(
         Text(description, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(language, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RepositoryItemPreview() {
+    RepositoryItem(
+        name = "Repo Name",
+        description = "This is a sample repository description.",
+        stars = 123,
+        language = "Kotlin",
+        onClick = {}
+    )
 }

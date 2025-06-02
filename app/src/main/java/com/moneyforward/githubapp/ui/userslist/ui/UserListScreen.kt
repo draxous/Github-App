@@ -43,6 +43,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
@@ -232,6 +233,17 @@ private fun UserListItem(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun UserListItemPreview() {
+    UserListItem(
+        name = "John Doe",
+        onClick = {},
+        avatarUrl = "https://example.com/avatar.png"
+    )
+}
+
+
 @Composable
 private fun SearchBar(
     query: String,
@@ -254,6 +266,22 @@ private fun SearchBar(
     )
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SearchBarPreview() {
+    SearchBar(
+        query = "Search query",
+        onQueryChange = {}
+    )
+}
+
+/**
+ * ErrorState composable function.
+ * This screen displays an error message and a retry button.
+ * @param message The error message to display.
+ * @param onRetry Callback function to handle retry action.
+ * @param modifier The modifier for this composable.
+ */
 @Composable
 private fun ErrorState(
     message: String,
@@ -277,4 +305,13 @@ private fun ErrorState(
             Text(stringResource(R.string.retry_button_text))
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ErrorStatePreview() {
+    ErrorState(
+        message = "An error occurred",
+        onRetry = {}
+    )
 }
